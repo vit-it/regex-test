@@ -9,6 +9,8 @@ public class RegexTest {
     public static void main(String[] args) {
 
         test("([0-9]{2})/([0-9]{2})/([0-9]{4})", "a15/15/2048z17/17/2049", "<$3.$2.$1>");
+        // https://stackoverflow.com/questions/2708833/examples-of-regex-matcher-g-the-end-of-the-previous-match-in-java-would-be-ni
+        test("(?<=\\G\\d{3})(?=\\d)" + "|" + "(?<=^-?\\d{1,3})(?=(?:\\d{3})+(?!\\d))", "-1,234,567,890.1234567890", "x");
 
         predicate("t(?:i|o)p", "tip");
         predicate("t(?:i|o)p", "tpp");
@@ -51,21 +53,21 @@ public class RegexTest {
         i = m.groupCount();
         out("groupCount: " + i);
 
+        m.reset();
+
         i = 0;
         while (b = m.find()) {
-            String str = ++i + " find " + m.group() + ", start " + m.start() + ", end" + m.end();
-
+            String str = ++i + " find " + m.group() + ", start " + m.start() + ", end " + m.end() + ", val "
+                    + input.subSequence(m.start(), m.end());
 
             for (int g = 0; g <= m.groupCount(); g++) {
                 if (g == 0)
                     str += " [";
-
                 str += "" + g + ":" + m.group(g);
-
                 if (g == m.groupCount()) {
                     str += "]";
                 } else {
-                    str +=  ", ";
+                    str += ", ";
                 }
             }
             out(str);
@@ -77,7 +79,7 @@ public class RegexTest {
 
         s = m.replaceAll(replacement);
         m.reset();
-        out("replaceAll: " +s);
+        out("replaceAll: " + s);
     }
 
     private static void predicate(String regex, String input) {
